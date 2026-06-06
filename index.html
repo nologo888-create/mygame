@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>เกมจับคู่ ร้านเช็คอิน ตามสั่ง</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
+        body { background: #fff5e6; font-family: 'Kanit', sans-serif; text-align: center; color: #ff6f9c; padding: 10px; }
+        #profile-area { margin: 10px auto; }
+        #profile-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #ffcc80; margin-bottom: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 400px; margin: 20px auto; background: #ffe4e1; padding: 10px; border-radius: 20px; }
+        .card { width: 80px; height: 80px; cursor: pointer; perspective: 1000px; }
+        .card-inner { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .front { background: #ffb7c5; color: white; border: 3px solid #ff9aa2; }
+        .back { background: #fff; border: 3px solid #ffcc80; transform: rotateY(180deg); }
+        #leaderboard { max-width: 400px; margin: 20px auto; background: white; color: #ff6f9c; padding: 15px; border-radius: 20px; border: 3px solid #ffcc80; }
+        #start-screen { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255, 245, 230, 0.95); display:flex; align-items:center; justify-content:center; z-index:999; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen"><button onclick="startGame()" style="padding:15px 30px; font-size:20px; background:#ff6f9c; color:white; border:none; border-radius:20px; cursor:pointer;">เริ่มเล่นความอร่อย!</button></div>
+
+    <h1>ร้านเช็คอิน ตามสั่ง</h1>
+    <div id="profile-area">
+        <img id="profile-img" src="https://via.placeholder.com/60" alt="รูปโปรไฟล์">
+        <p>ผู้เล่น: <span id="player-name">...</span> | เวลา: <span id="timer">0</span> วิ</p>
+    </div>
+    
+    <div class="grid" id="grid"></div>
+
+    <div id="leaderboard">
+        <h3>🏆 Top 10 Rankings</h3>
+        <table style="width:100%"><thead><tr><th>อันดับ</th><th>ชื่อ</th><th>เวลา</th></tr></thead><tbody id="lb-body"></tbody></table>
+    </div>
+
+    <audio id="bgm" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
+
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        const foods = ['🍕', '🍔', '🍟', '🍦', '🍩', '🍣', '🍜', '🍱', '🍰', '🍹'];
+        let deck = [...foods, ...foods].sort(() => Math.random() - 0.5);
+        let flipped = [], matched = 0, timer = 0, timerInt = null, playerName = "ผู้เล่น";
+
+        function startGame() {
+            document.getElementById('bgm').play();
+            document.getElementById('start-screen').style.display = 'none';
+            timerInt = setInterval(() => { timer++; document.getElementById('timer').innerText = timer; }, 1000);
+            init();
+        }
+
+        async function init() {
+            try {
+                await liff.init({ liffId: "YOUR_LIFF_ID" });
+                if (liff.isLoggedIn()) {
+                    const p = await liff.getProfile();
+                    playerName = p.displayName;
+                    document.getElementById('player-name').innerText = playerName;
+                    document.getElementById('profile-img').src = p.pictureUrl;
+                }
+            } catch(e) {}
+            createBoard();
+            loadLeaderboard();
+        }
+
+        function createBoard() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            deck.forEach(icon => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<div class="card-inner"><div class="front">✿</div><div class="back">${icon}</div></div>`;
+                card.onclick = function() {
+                    if (flipped.length >= 2 || this.classList.contains('flipped')) return;
+                    this.classList.add('flipped');
+                    flipped.push({card: this, icon: icon});
+                    if (flipped.length === 2) {
+                        if (flipped[0].icon === flipped[1].icon) {
+                            matched += 2; flipped = [];
+                            if (matched === 20) winGame();
+                        } else {
+                            setTimeout(() => { flipped.forEach(f => f.card.classList.remove('flipped')); flipped = []; }, 800);
+                        }
+                    }
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        async function winGame() {
+            clearInterval(timerInt);
+            document.getElementById('bgm').pause();
+            confetti();
+            
+            // บันทึกและดึงอันดับ
+            await saveScore(playerName, timer);
+            const response = await fetch("YOUR_WEB_APP_URL_HERE");
+            const data = await response.json();
+            const myRank = data.findIndex(row => row[1] === playerName && row[2] == timer) + 1;
+            
+            alert(`เกมจบแล้ว! คุณทำเวลาได้ ${timer} วินาที\nคุณอยู่อันดับที่: ${myRank > 0 ? myRank : "นอก Top 10"}`);
+        }
+
+        async function loadLeaderboard() {
+            const response = await fetch("YOUR_WEB_APP_URL_HERE");
+            const data = await response.json();
+            document.getElementById('lb-body').innerHTML = data.map((r, i) => `<tr><td>${i+1}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+        }
+
+        async function saveScore(name, time) {
+            await fetch("YOUR_WEB_APP_URL_HERE", { method: 'POST', mode: 'no-cors', body: JSON.stringify({ name: name, time: time }) });
+            loadLeaderboard();
+        }
+    </script>
+</body>
+</html>
