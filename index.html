@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>เกมจับคู่ ร้านเช็คอิน ตามสั่ง</title>
+    <title>เกมส์จับคู่ ร้านเช็คอิน ตามสั่ง</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
@@ -10,11 +10,11 @@
         #profile-area { margin: 10px auto; font-size: 30px; font-weight: bold; }
         #timer { font-size: 60px !important; font-weight: bold; color: #ff6f9c; }
         #profile-img { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #ffcc80; margin-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2vw; width: 90vw; max-width: 100%; margin: 20px auto; background: #ffe4e1; padding: 2vw; border-radius: 20px; }
-        .card { width: 100%; aspect-ratio: 1 / 1; cursor: pointer; perspective: 1000px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2vw; width: 98vw; max-width: 100%; margin: 20px auto; background: #ffe4e1; padding: 2vw; border-radius: 20px; }
+        .card { width: 150%; aspect-ratio: 1 / 1; cursor: pointer; perspective: 1000px; }
         .card-inner { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
         .card.flipped .card-inner { transform: rotateY(180deg); }
-        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 80px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .front { background: #ffb7c5; color: white; border: 10px solid #ff9aa2; }
         .back { background: #fff; border: 3px solid #ffcc80; transform: rotateY(180deg); }
         #leaderboard { max-width: 800px; margin: 20px auto; background: white; color: #ff6f9c; padding: 15px; border-radius: 20px; border: 3px solid #ffcc80; font-size: 18px; }
@@ -23,7 +23,7 @@
 </head>
 <body>
 
-    <div id="start-screen"><button onclick="startGame()" style="padding:20px 40px; font-size:30px; background:#ff6f9c; color:white; border:none; border-radius:20px; cursor:pointer;">เริ่มเล่นความอร่อย!</button></div>
+    <div id="start-screen"><button onclick="startGame()" style="padding:20px 40px; font-size:30px; background:#ff6f9c; color:white; border:none; border-radius:20px; cursor:pointer;">พร้อมเล้ว เริ่มเลย!</button></div>
 
     <h1>ร้านเช็คอิน ตามสั่ง</h1> 
     <div id="profile-area">
