@@ -64,11 +64,18 @@
         async function init() {
             try {
                 await liff.init({ liffId: "2010315417-OMarJSDY" });
-                if (liff.isLoggedIn()) {
-                    const p = await liff.getProfile();
-                    playerName = p.displayName;
-                    document.getElementById('player-name').innerText = playerName;
-                    document.getElementById('profile-img').src = p.pictureUrl;
+        
+        // เช็คว่าล็อกอินหรือยัง ถ้ายังให้เด้งไปหน้าล็อกอิน
+        if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+        }
+
+        // ถ้าล็อกอินแล้ว ให้ดึงโปรไฟล์
+        const p = await liff.getProfile();
+        playerName = p.displayName;
+        document.getElementById('player-name').innerText = playerName;
+        document.getElementById('profile-img').src = p.pictureUrl;
                 }
             } catch(e) {}
             createBoard();
