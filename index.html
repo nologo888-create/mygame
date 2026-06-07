@@ -54,12 +54,12 @@
             await liff.init({ liffId: "2010315417-OMarJSDY" });
             if (liff.isLoggedIn()) { const p = await liff.getProfile(); playerName = p.displayName; }
             createBoard();
-            fetchRankings(); // ดึงข้อมูลทันทีเมื่อรู้ชื่อผู้เล่น
+            fetchRankings();
         }
 
         function fetchRankings() {
             const script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?action=get&callback=displayGlobalRank`;
+            script.src = `${SCRIPT_URL}?action=get&callback=displayGlobalRank&t=${Date.now()}`;
             document.body.appendChild(script);
         }
 
@@ -68,7 +68,11 @@
             let rankText = myIndex >= 0 ? `อันดับของคุณ: ที่ ${myIndex + 1} (เวลา: ${data[myIndex].time} วิ)` : "คุณยังไม่มีอันดับ";
             document.getElementById('my-rank-page1').innerText = rankText;
             document.getElementById('my-rank-page2').innerText = rankText;
+            
+            // แสดงตาราง Top 10
             document.getElementById('lb-body').innerHTML = data.slice(0, 10).map((r, i) => `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.time}</td></tr>`).join('');
+            
+            // หากไม่ติด Top 10 ให้โชว์แถวตัวเองต่อท้าย
             if (myIndex >= 10) {
                 document.getElementById('lb-body').innerHTML += `<tr style="background:#fff5e6; font-weight:bold;"><td>${myIndex + 1}</td><td>${playerName} (คุณ)</td><td>${data[myIndex].time}</td></tr>`;
             }
@@ -103,7 +107,7 @@
             document.getElementById('bgm').pause();
             confetti();
             const script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?action=get&callback=checkRecord`;
+            script.src = `${SCRIPT_URL}?action=get&callback=checkRecord&t=${Date.now()}`;
             document.body.appendChild(script);
         }
 
