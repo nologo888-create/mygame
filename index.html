@@ -10,45 +10,46 @@
         #profile-area { margin: 10px auto; font-size: 22px; font-weight: bold; }
         #timer { font-size: 70px !important; font-weight: bold; color: #ff6f9c; }
         #rank-display { font-size: 24px; font-weight: bold; color: #ff6f9c; margin-bottom: 10px; }
-        #profile-img { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #ffcc80; }
+        #profile-img { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #ffcc80; margin-bottom: 10px; }
         
-        /* ปรับ Grid และ Card ให้ขยายเต็มหน้าจอมากยิ่งขึ้น */
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 96vw; max-width: 600px; margin: 15px auto; background: #ffe4e1; padding: 15px; border-radius: 25px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 95vw; max-width: 600px; margin: 20px auto; background: #ffe4e1; padding: 15px; border-radius: 25px; }
         .card { width: 100%; aspect-ratio: 1 / 1; cursor: pointer; perspective: 1000px; }
         .card-inner { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
         .card.flipped .card-inner { transform: rotateY(180deg); }
-        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 70px; box-shadow: 0 6px 10px rgba(0,0,0,0.2); }
-        .front { background: #ff6f9c; color: white; border: 5px solid #ff9aa2; }
-        .back { background: #fff; border: 5px solid #ffcc80; transform: rotateY(180deg); }
+        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 80px; box-shadow: 0 6px 10px rgba(0,0,0,0.15); }
+        .front { background: #ff6f9c; color: white; border: 4px solid #ff9aa2; }
+        .back { background: #fff; border: 4px solid #ffcc80; transform: rotateY(180deg); }
         
-        #leaderboard { width: 96vw; max-width: 600px; margin: 20px auto; background: white; padding: 20px; border-radius: 25px; border: 4px solid #ffcc80; }
+        #leaderboard { max-width: 95vw; width: 500px; margin: 20px auto; background: white; padding: 20px; border-radius: 20px; border: 3px solid #ffcc80; }
         table { width: 100%; font-size: 20px; border-collapse: collapse; }
-        th, td { padding: 15px; border-bottom: 2px solid #ffcc80; }
+        th, td { padding: 12px; border-bottom: 1px solid #ffcc80; }
     </style>
 </head>
 <body>
     <div id="start-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff5e6; display:flex; align-items:center; justify-content:center; z-index:999;">
-        <button onclick="startGame()" style="padding:25px 50px; font-size:40px; background:#ff6f9c; color:white; border:none; border-radius:40px; cursor:pointer;">เริ่มเกม!</button>
+        <button onclick="startGame()" style="padding:20px 40px; font-size:30px; background:#ff6f9c; color:white; border:none; border-radius:30px; cursor:pointer;">เริ่มเกม!</button>
     </div>
     <h1>ร้านเช็คอิน ตามสั่ง</h1> 
     <div id="profile-area">
-        <img id="profile-img" src="https://via.placeholder.com/80" alt="รูป">
+        <img id="profile-img" src="https://via.placeholder.com/80" alt="รูปโปรไฟล์">
         <p>ผู้เล่น: <span id="player-name">...</span><br>เวลา: <span id="timer">0</span> วิ</p> 
         <div id="rank-display"></div>
     </div>
     <div class="grid" id="grid"></div>
     <div id="leaderboard">
         <h3>🏆 Top 10 Rankings</h3>
-        <table id="lb-table"><thead><tr><th>อันดับ</th><th>ชื่อ</th><th>เวลา</th></tr></thead><tbody id="lb-body"></tbody></table>
+        <table id="lb-table"><thead><tr><th>อันดับ</th><th>ชื่อ</th><th>เวลา</th></tr></thead><tbody id="lb-body"><tr><td colspan="3">กำลังโหลด...</td></tr></tbody></table>
     </div>
+    <audio id="bgm" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoPCNkXMG41vrRZfuMxafAYSGeRXb2p59SAHMmpED-jFf96I-rSwhINzLLy6vUcITDLg/exec";
-        let deck = [...Array(10).fill(0).flatMap((_,i) => [i,i])].sort(() => Math.random() - 0.5);
-        const icons = ['🍕', '🍔', '🍟', '🍦', '🍩', '🍣', '🍜', '🍱', '🍰', '🍹'];
-        let flipped = [], matched = 0, timer = 0, timerInt = null, playerName = "ผู้เล่น", isGameStarted = false;
+        const foods = ['🍕', '🍔', '🍟', '🍦', '🍩', '🍣', '🍜', '🍱', '🍰', '🍹'];
+        let deck = [...foods, ...foods].sort(() => Math.random() - 0.5);
+        let flipped = [], matched = 0, timer = 0, timerInt = null, playerName = "ผู้เล่น", isGameStarted = false, oldBest = null;
 
         async function startGame() {
+            document.getElementById('bgm').play();
             document.getElementById('start-screen').style.display = 'none';
             await liff.init({ liffId: "2010315417-OMarJSDY" });
             if (liff.isLoggedIn()) {
@@ -62,10 +63,10 @@
 
         function createBoard() {
             const grid = document.getElementById('grid');
-            deck.forEach(idx => {
+            deck.forEach(icon => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<div class="card-inner"><div class="front">✿</div><div class="back">${icons[idx]}</div></div>`;
+                card.innerHTML = `<div class="card-inner"><div class="front">✿</div><div class="back">${icon}</div></div>`;
                 card.onclick = function() {
                     if (!isGameStarted) {
                         isGameStarted = true;
@@ -73,7 +74,7 @@
                     }
                     if (flipped.length >= 2 || this.classList.contains('flipped')) return;
                     this.classList.add('flipped');
-                    flipped.push({card: this, icon: icons[idx]});
+                    flipped.push({card: this, icon: icon});
                     if (flipped.length === 2) {
                         if (flipped[0].icon === flipped[1].icon) {
                             matched += 2; flipped = [];
@@ -87,9 +88,24 @@
             });
         }
 
-        function winGame() {
+        async function winGame() {
             clearInterval(timerInt);
+            document.getElementById('bgm').pause();
             confetti();
+            
+            // ดึงข้อมูลเพื่อเช็คสถิติเก่าก่อนอัปเดต
+            const response = await fetch(`${SCRIPT_URL}?action=get`);
+            const data = await response.json();
+            const myPrev = data.find(r => r.name === playerName);
+            
+            let message = `เกมจบแล้ว! คุณทำเวลาได้ ${timer} วินาที`;
+            if (myPrev && myPrev.time < timer) {
+                message += `\nเสียใจด้วย คุณยังทำลายสถิติเก่า (${myPrev.time} วิ) ของตัวเองไม่ได้ครับ`;
+            } else {
+                message += `\nยอดเยี่ยม! คุณทำลายสถิติใหม่ได้แล้ว!`;
+            }
+            
+            alert(message);
             new Image().src = `${SCRIPT_URL}?action=save&name=${encodeURIComponent(playerName)}&time=${timer}`;
             setTimeout(loadLeaderboard, 1500);
         }
@@ -103,7 +119,7 @@
         function displayLB(data) {
             let myRank = data.findIndex(r => r.name === playerName) + 1;
             document.getElementById('rank-display').innerText = myRank > 0 ? `อันดับของคุณ: ที่ ${myRank}` : "";
-            document.getElementById('lb-body').innerHTML = data.slice(0, 10).map((r, i) => `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.time}</td></tr>`).join('');
+            document.getElementById('lb-body').innerHTML = data.map((r, i) => `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.time}</td></tr>`).join('');
         }
     </script>
 </body>
