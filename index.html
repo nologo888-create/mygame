@@ -11,24 +11,24 @@
         .active { display: block; }
         #timer { font-size: 80px; font-weight: bold; color: #ff6f9c; }
         .rank-info { font-size: 26px; font-weight: bold; margin: 10px 0; color: #ff6f9c; background: #ffe4e1; padding: 10px; border-radius: 15px; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 98vw; margin: 10px auto; background: #ffe4e1; padding: 12px; border-radius: 20px; box-sizing: border-box; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 95vw; margin: 10px auto; }
         .card { width: 100%; aspect-ratio: 1 / 1; cursor: pointer; perspective: 1000px; }
         .card-inner { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
         .card.flipped .card-inner { transform: rotateY(180deg); }
-        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 130px; box-shadow: 0 6px 8px rgba(0,0,0,0.2); }
-        .front { background: #ff6f9c; color: white; border: 5px solid #ff9aa2; }
-        .back { background: #fff; border: 5px solid #ffcc80; transform: rotateY(180deg); }
-        #leaderboard { width: 98vw; margin: 10px auto; background: white; padding: 20px; border-radius: 20px; border: 4px solid #ffcc80; }
+        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 130px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .front { background: #ff6f9c; color: white; border: 4px solid #ff9aa2; }
+        .back { background: #fff; border: 4px solid #ffcc80; transform: rotateY(180deg); }
+        #leaderboard { width: 95vw; margin: 10px auto; background: white; padding: 15px; border-radius: 20px; border: 3px solid #ffcc80; }
         table { width: 100%; font-size: 22px; border-collapse: collapse; }
-        th, td { padding: 15px; border-bottom: 2px solid #ffcc80; }
-        button { padding: 20px 40px; font-size: 25px; background: #ff6f9c; color: white; border: none; border-radius: 30px; cursor: pointer; margin-top: 20px; }
+        th, td { padding: 15px; border-bottom: 1px solid #ffcc80; }
+        button { padding: 20px 40px; font-size: 25px; background: #ff6f9c; color: white; border: none; border-radius: 30px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div id="page-game" class="page active">
         <h1>ร้านเช็คอิน ตามสั่ง</h1>
-        <div id="my-rank-page1" class="rank-info">กำลังโหลดอันดับ...</div>
-        <p>เวลา: <span id="timer">0</span> วิ</p>
+        <div id="my-rank-page1" class="rank-info">กำลังโหลด...</div>
+        <p id="timer">เวลา: 0 วิ</p>
         <div class="grid" id="grid"></div>
     </div>
 
@@ -39,6 +39,7 @@
             <h3>🏆 Top 10 Rankings</h3>
             <table id="lb-table"><thead><tr><th>อันดับ</th><th>ชื่อ</th><th>เวลา</th></tr></thead><tbody id="lb-body"></tbody></table>
         </div>
+        <br>
         <button onclick="location.reload()">เล่นใหม่อีกครั้ง</button>
     </div>
 
@@ -54,28 +55,7 @@
             await liff.init({ liffId: "2010315417-OMarJSDY" });
             if (liff.isLoggedIn()) { const p = await liff.getProfile(); playerName = p.displayName; }
             createBoard();
-            fetchRankings();
-        }
-
-        function fetchRankings() {
-            const script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?action=get&callback=displayGlobalRank&t=${Date.now()}`;
-            document.body.appendChild(script);
-        }
-
-        function displayGlobalRank(data) {
-            let myIndex = data.findIndex(r => r.name === playerName);
-            let rankText = myIndex >= 0 ? `อันดับของคุณ: ที่ ${myIndex + 1} (เวลา: ${data[myIndex].time} วิ)` : "คุณยังไม่มีอันดับ";
-            document.getElementById('my-rank-page1').innerText = rankText;
-            document.getElementById('my-rank-page2').innerText = rankText;
-            
-            // แสดงตาราง Top 10
-            document.getElementById('lb-body').innerHTML = data.slice(0, 10).map((r, i) => `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.time}</td></tr>`).join('');
-            
-            // หากไม่ติด Top 10 ให้โชว์แถวตัวเองต่อท้าย
-            if (myIndex >= 10) {
-                document.getElementById('lb-body').innerHTML += `<tr style="background:#fff5e6; font-weight:bold;"><td>${myIndex + 1}</td><td>${playerName} (คุณ)</td><td>${data[myIndex].time}</td></tr>`;
-            }
+            loadLeaderboard();
         }
 
         function createBoard() {
@@ -85,7 +65,7 @@
                 card.className = 'card';
                 card.innerHTML = `<div class="card-inner"><div class="front">✿</div><div class="back">${icon}</div></div>`;
                 card.onclick = function() {
-                    if (!timerInt) { document.getElementById('bgm').play(); timerInt = setInterval(() => { timer++; document.getElementById('timer').innerText = timer; }, 1000); }
+                    if (!timerInt) { document.getElementById('bgm').play(); timerInt = setInterval(() => { timer++; document.getElementById('timer').innerText = "เวลา: " + timer + " วิ"; }, 1000); }
                     if (flipped.length >= 2 || this.classList.contains('flipped')) return;
                     this.classList.add('flipped');
                     flipped.push({card: this, icon: icon});
@@ -106,20 +86,29 @@
             clearInterval(timerInt);
             document.getElementById('bgm').pause();
             confetti();
+            new Image().src = `${SCRIPT_URL}?action=save&name=${encodeURIComponent(playerName)}&time=${timer}`;
+            alert("บันทึกคะแนนเรียบร้อย!");
+            document.getElementById('page-game').classList.remove('active');
+            document.getElementById('page-result').classList.add('active');
+            loadLeaderboard();
+        }
+
+        function loadLeaderboard() {
             const script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?action=get&callback=checkRecord&t=${Date.now()}`;
+            script.src = `${SCRIPT_URL}?action=get&callback=displayLB`;
             document.body.appendChild(script);
         }
 
-        function checkRecord(data) {
-            const myPrev = data.find(r => r.name === playerName);
-            let message = `เกมจบแล้ว! คุณทำเวลาได้ ${timer} วินาที`;
-            message += (myPrev && myPrev.time < timer) ? `\nเสียใจด้วย คุณยังทำลายสถิติเดิม (${myPrev.time} วิ) ไม่ได้ครับ` : `\nยอดเยี่ยม! คุณทำลายสถิติใหม่ได้แล้ว!`;
-            alert(message);
-            new Image().src = `${SCRIPT_URL}?action=save&name=${encodeURIComponent(playerName)}&time=${timer}`;
-            document.getElementById('page-game').classList.remove('active');
-            document.getElementById('page-result').classList.add('active');
-            fetchRankings();
+        function displayLB(data) {
+            let myIndex = data.findIndex(r => r.name === playerName);
+            let rankText = myIndex >= 0 ? `อันดับของคุณ: ที่ ${myIndex + 1} (${data[myIndex].time} วินาที)` : "ยังไม่มีอันดับ";
+            document.getElementById('my-rank-page1').innerText = rankText;
+            document.getElementById('my-rank-page2').innerText = rankText;
+            
+            document.getElementById('lb-body').innerHTML = data.slice(0, 10).map((r, i) => `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.time}</td></tr>`).join('');
+            if (myIndex >= 10) {
+                document.getElementById('lb-body').innerHTML += `<tr style="background:#fff5e6; font-weight:bold;"><td>${myIndex + 1}</td><td>${playerName} (คุณ)</td><td>${data[myIndex].time}</td></tr>`;
+            }
         }
         init();
     </script>
