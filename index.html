@@ -6,18 +6,20 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
-        body { background: #fff5e6; font-family: 'Kanit', sans-serif; text-align: center; color: #ff6f9c; padding: 20px; }
+        body { background: #fff5e6; font-family: 'Kanit', sans-serif; text-align: center; color: #ff6f9c; padding: 10px; }
         #profile-area { margin: 10px auto; font-size: 20px; font-weight: bold; }
-        #timer { font-size: 50px !important; font-weight: bold; color: #ff6f9c; }
+        #timer { font-size: 60px !important; font-weight: bold; color: #ff6f9c; }
         #profile-img { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #ffcc80; margin-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 95vw; max-width: 600px; margin: 20px auto; background: #ffe4e1; padding: 15px; border-radius: 25px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 95vw; max-width: 500px; margin: 10px auto; background: #ffe4e1; padding: 10px; border-radius: 20px; }
         .card { width: 100%; aspect-ratio: 1 / 1; cursor: pointer; perspective: 1000px; }
         .card-inner { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
         .card.flipped .card-inner { transform: rotateY(180deg); }
-        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 6px 10px rgba(0,0,0,0.15); }
-        .front { background: #ffb7c5; color: white; border: 10px solid #ff9aa2; }
-        .back { background: #fff; border: 4px solid #ffcc80; transform: rotateY(180deg); }
-        #leaderboard { max-width: 95vw; margin: 20px auto; background: white; padding: 20px; border-radius: 20px; border: 3px solid #ffcc80; }
+        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .front { background: #ff6f9c; color: white; }
+        .back { background: #fff; border: 3px solid #ffcc80; transform: rotateY(180deg); }
+        #leaderboard { max-width: 95vw; width: 500px; margin: 20px auto; background: white; padding: 15px; border-radius: 20px; border: 3px solid #ffcc80; }
+        table { width: 100%; font-size: 18px; border-collapse: collapse; }
+        th, td { padding: 8px; border-bottom: 1px solid #ffcc80; }
     </style>
 </head>
 <body>
@@ -32,7 +34,7 @@
     <div class="grid" id="grid"></div>
     <div id="leaderboard">
         <h3>🏆 Top 10 Rankings</h3>
-        <table style="width:100%"><tbody id="lb-body"><tr><td>กำลังโหลด...</td></tr></tbody></table>
+        <table id="lb-table"><thead><tr><th>อันดับ</th><th>ชื่อ</th><th>เวลา</th></tr></thead><tbody id="lb-body"><tr><td colspan="3">กำลังโหลด...</td></tr></tbody></table>
     </div>
     <audio id="bgm" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
