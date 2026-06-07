@@ -12,23 +12,23 @@
         #rank-display { font-size: 24px; font-weight: bold; color: #ff6f9c; margin-bottom: 10px; }
         #profile-img { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #ffcc80; }
         
-        /* ปรับ Grid ให้ใหญ่ขึ้นเกือบเต็มจอ */
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 94vw; max-width: 600px; margin: 10px auto; background: #ffe4e1; padding: 10px; border-radius: 20px; }
+        /* ปรับ Grid และ Card ให้ขยายเต็มหน้าจอมากยิ่งขึ้น */
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; width: 96vw; max-width: 600px; margin: 15px auto; background: #ffe4e1; padding: 15px; border-radius: 25px; }
         .card { width: 100%; aspect-ratio: 1 / 1; cursor: pointer; perspective: 1000px; }
         .card-inner { width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
         .card.flipped .card-inner { transform: rotateY(180deg); }
-        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 45px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .front { background: #ff6f9c; color: white; }
-        .back { background: #fff; border: 3px solid #ffcc80; transform: rotateY(180deg); }
+        .front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 70px; box-shadow: 0 6px 10px rgba(0,0,0,0.2); }
+        .front { background: #ff6f9c; color: white; border: 5px solid #ff9aa2; }
+        .back { background: #fff; border: 5px solid #ffcc80; transform: rotateY(180deg); }
         
-        #leaderboard { width: 94vw; max-width: 600px; margin: 20px auto; background: white; padding: 15px; border-radius: 20px; border: 3px solid #ffcc80; }
-        table { width: 100%; font-size: 18px; border-collapse: collapse; }
-        th, td { padding: 10px; border-bottom: 1px solid #ffcc80; }
+        #leaderboard { width: 96vw; max-width: 600px; margin: 20px auto; background: white; padding: 20px; border-radius: 25px; border: 4px solid #ffcc80; }
+        table { width: 100%; font-size: 20px; border-collapse: collapse; }
+        th, td { padding: 15px; border-bottom: 2px solid #ffcc80; }
     </style>
 </head>
 <body>
     <div id="start-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#fff5e6; display:flex; align-items:center; justify-content:center; z-index:999;">
-        <button onclick="startGame()" style="padding:20px 40px; font-size:30px; background:#ff6f9c; color:white; border:none; border-radius:30px; cursor:pointer;">เริ่มเกม!</button>
+        <button onclick="startGame()" style="padding:25px 50px; font-size:40px; background:#ff6f9c; color:white; border:none; border-radius:40px; cursor:pointer;">เริ่มเกม!</button>
     </div>
     <h1>ร้านเช็คอิน ตามสั่ง</h1> 
     <div id="profile-area">
@@ -91,7 +91,7 @@
             clearInterval(timerInt);
             confetti();
             new Image().src = `${SCRIPT_URL}?action=save&name=${encodeURIComponent(playerName)}&time=${timer}`;
-            setTimeout(loadLeaderboard, 1000);
+            setTimeout(loadLeaderboard, 1500);
         }
 
         function loadLeaderboard() {
