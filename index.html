@@ -27,7 +27,7 @@
 <body>
     <div id="page-game" class="page active">
         <h1>ร้านเช็คอิน ตามสั่ง</h1>
-        <div id="my-rank-page1" class="rank-info">กำลังตรวจสอบอันดับ...</div>
+        <div id="my-rank-page1" class="rank-info">กำลังโหลดอันดับ...</div>
         <p>เวลา: <span id="timer">0</span> วิ</p>
         <div class="grid" id="grid"></div>
     </div>
@@ -54,9 +54,24 @@
             await liff.init({ liffId: "2010315417-OMarJSDY" });
             if (liff.isLoggedIn()) { const p = await liff.getProfile(); playerName = p.displayName; }
             createBoard();
+            fetchRankings(); // ดึงข้อมูลทันทีเมื่อรู้ชื่อผู้เล่น
+        }
+
+        function fetchRankings() {
             const script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?action=get&callback=updateAllRanks`;
+            script.src = `${SCRIPT_URL}?action=get&callback=displayGlobalRank`;
             document.body.appendChild(script);
+        }
+
+        function displayGlobalRank(data) {
+            let myIndex = data.findIndex(r => r.name === playerName);
+            let rankText = myIndex >= 0 ? `อันดับของคุณ: ที่ ${myIndex + 1} (เวลา: ${data[myIndex].time} วิ)` : "คุณยังไม่มีอันดับ";
+            document.getElementById('my-rank-page1').innerText = rankText;
+            document.getElementById('my-rank-page2').innerText = rankText;
+            document.getElementById('lb-body').innerHTML = data.slice(0, 10).map((r, i) => `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.time}</td></tr>`).join('');
+            if (myIndex >= 10) {
+                document.getElementById('lb-body').innerHTML += `<tr style="background:#fff5e6; font-weight:bold;"><td>${myIndex + 1}</td><td>${playerName} (คุณ)</td><td>${data[myIndex].time}</td></tr>`;
+            }
         }
 
         function createBoard() {
@@ -100,29 +115,7 @@
             new Image().src = `${SCRIPT_URL}?action=save&name=${encodeURIComponent(playerName)}&time=${timer}`;
             document.getElementById('page-game').classList.remove('active');
             document.getElementById('page-result').classList.add('active');
-            loadLeaderboard();
-        }
-
-        function loadLeaderboard() {
-            const script = document.createElement('script');
-            script.src = `${SCRIPT_URL}?action=get&callback=displayLB`;
-            document.body.appendChild(script);
-        }
-
-        function updateAllRanks(data) {
-            let myIndex = data.findIndex(r => r.name === playerName);
-            let rankText = myIndex >= 0 ? `อันดับของคุณ: ที่ ${myIndex + 1}` : "คุณยังไม่มีอันดับ";
-            document.getElementById('my-rank-page1').innerText = rankText;
-            document.getElementById('my-rank-page2').innerText = rankText;
-        }
-
-        function displayLB(data) {
-            updateAllRanks(data);
-            document.getElementById('lb-body').innerHTML = data.slice(0, 10).map((r, i) => `<tr><td>${i+1}</td><td>${r.name}</td><td>${r.time}</td></tr>`).join('');
-            let myIndex = data.findIndex(r => r.name === playerName);
-            if (myIndex >= 10) {
-                document.getElementById('lb-body').innerHTML += `<tr style="background:#fff5e6; font-weight:bold;"><td>${myIndex + 1}</td><td>${playerName} (คุณ)</td><td>${data[myIndex].time}</td></tr>`;
-            }
+            fetchRankings();
         }
         init();
     </script>
