@@ -35,6 +35,16 @@
     </div>
 </div>
 <script>
+    function loadLeaderboard() {
+        fetch("https://script.google.com/macros/s/AKfycbx0MU4lHie2XfiAWbaFWPTqncntH-LLZzdok6yGdAtlZjfq7pvwmPJXYJ2lGpB8kXaa/exec") // ใส่ URL ของคุณตรงนี้
+        .then(res => res.json())
+        .then(data => {
+            let html = "<table style='width:100%; text-align:left;'>";
+            data.forEach((row, index) => {
+                html += `<tr><td>${index+1}. ${row[0]}</td><td style='text-align:right;'>${row[2]} วิ</td></tr>`;
+            });
+            html += "</table>";
+            document.getElementById('leaderboard').innerHTML = html;
     const MY_LIFF_ID = "2010315417-VgfsSvz5";
     let user = { name: "Guest", pic: "" };
     
