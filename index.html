@@ -39,7 +39,7 @@
     let user = { name: "Guest", pic: "" };
 
     // 1. ฟังก์ชันโหลด Leaderboard
-    // 1. ฟังก์ชันโหลด Leaderboard (ก๊อปปี้ไปวางทับอันเดิมทั้งหมดได้เลย)
+    // 1. ฟังก์ชันโหลด Leaderboard (แก้ไขให้ถูกต้อง)
     function loadLeaderboard() {
         fetch("https://script.google.com/macros/s/AKfycbx0MU4lHie2XfiAWbaFWPTqncntH-LLZzdok6yGdAtlZjfq7pvwmPJXYJ2lGpB8kXaa/exec")
         .then(res => res.json())
@@ -48,25 +48,21 @@
             
             let html = "<table style='width:100%; text-align:left; border-collapse: collapse;'>";
             
-            // --- วางโค้ดส่วนนี้ต่อจากบรรทัดด้านบนได้เลยครับ ---
+            const pastelColors = [
+                '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#c5cae9', 
+                '#b3e5fc', '#b2ebf2', '#c8e6c9', '#dcedc8', '#fff9c4'
+            ];
+
             data.forEach((row, index) => {
                 let bgColor = "";
-                const pastelColors = [
-                    '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#c5cae9', 
-                    '#b3e5fc', '#b2ebf2', '#c8e6c9', '#dcedc8', '#fff9c4'
-                ];
-
-                // เช็คว่าเป็นชื่อเราไหม
                 let isMe = (row[0].trim() === user.name.trim());
 
                 if (index < 10) {
-                    let color = pastelColors[index % 10];
-                    bgColor = `background: ${color};`;
+                    bgColor = `background: ${pastelColors[index % 10]};`;
                 }
 
-                // ถ้าเป็นชื่อเรา ให้ทับด้วยสไตล์พิเศษ (กรอบสีแดง + เงา + ตัวหนา)
                 let rowStyle = isMe ? 
-                    `style='${bgColor} border: 2px solid #ff4757; box-shadow: 0 0 10px rgba(255, 71, 87, 0.5); font-weight: 900; color: #d63031;'` : 
+                    `style='${bgColor} border: 3px solid #ff4757; box-shadow: 0 0 10px rgba(255, 71, 87, 0.5); font-weight: 900; color: #d63031;'` : 
                     `style='${bgColor}'`;
 
                 html += `<tr ${rowStyle}>
@@ -74,8 +70,6 @@
                             <td style='text-align:right; padding:8px;'>${row[2]} วิ</td>
                          </tr>`;
             });
-            });
-            // ----------------------------------------------
             
             html += "</table>";
             document.getElementById('leaderboard').innerHTML = html;
@@ -86,7 +80,6 @@
             }
         });
     }
-
     // 2. เริ่มต้นระบบ LINE
     liff.init({ liffId: MY_LIFF_ID }).then(() => {
         loadLeaderboard();
