@@ -78,7 +78,9 @@
                 clearInterval(interval);
                 document.getElementById('bgMusic').pause();
                 confetti({ particleCount: 500, spread: 200, origin: { y: 0.6 } });
-                
+                fetch("https://script.google.com/macros/s/AKfycbx0MU4lHie2XfiAWbaFWPTqncntH-LLZzdok6yGdAtlZjfq7pvwmPJXYJ2lGpB8kXaa/exec", {
+                    method: "POST",
+                    body: JSON.stringify({ name: user.name, pic: user.pic, time: timer })
                 // สร้างป๊อปอัพแบบกำหนดเอง (แทนที่ alert)
                 const popup = document.createElement('div');
                 popup.style.cssText = "position:fixed; top:20%; left:10%; width:80%; background:white; padding:20px; border-radius:20px; text-align:center; box-shadow:0 10px 20px rgba(0,0,0,0.3); z-index:1000; font-size:1.2rem;";
