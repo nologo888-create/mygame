@@ -109,7 +109,9 @@
         document.getElementById('bgMusic').currentTime = 0;
         document.getElementById('bgMusic').play();
         
-        cards = [...foodIcons, ...foodIcons].sort(() => Math.random() - 0.5);
+        cards = [...foodIcons, ...foodIcons]
+            .sort(() => Math.random() - 0.5)
+            .sort(() => Math.random() - 0.5);
         const grid = document.getElementById('grid'); grid.innerHTML = '';
         cards.forEach(icon => {
             const div = document.createElement('div'); div.className = 'card';
