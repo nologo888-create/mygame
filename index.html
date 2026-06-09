@@ -51,19 +51,25 @@
             // --- วางโค้ดส่วนนี้ต่อจากบรรทัดด้านบนได้เลยครับ ---
             data.forEach((row, index) => {
                 let bgColor = "";
-                // เงื่อนไข index < 10 คือ อันดับที่ 1 ถึง 10
-                if (index < 10) {
-                    // ปรับค่าให้สีเข้มขึ้นเพื่อให้เห็นชัดตั้งแต่อันดับแรก
-                    let opacity = 0.9 - (index * 0.06); 
-                    // ใช้สีทองแบบชัดๆ ครับ
-                    bgColor = `style='background: rgba(255, 215, 0, ${opacity}); font-weight:bold; border-radius: 5px;'`;
-                }
-                
-                // เช็คชื่อตัวเองด้วย .trim() เพื่อความแม่นยำ
-                let isMe = (row[0].trim() === user.name.trim());
-                let borderStyle = isMe ? "border: 2px solid #ff4757;" : "";
+                const pastelColors = [
+                    '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#c5cae9', 
+                    '#b3e5fc', '#b2ebf2', '#c8e6c9', '#dcedc8', '#fff9c4'
+                ];
 
-                html += `<tr ${bgColor} ${borderStyle ? "style='" + borderStyle + "'" : ""}>
+                // เช็คว่าเป็นชื่อเราไหม
+                let isMe = (row[0].trim() === user.name.trim());
+
+                if (index < 10) {
+                    let color = pastelColors[index % 10];
+                    bgColor = `background: ${color};`;
+                }
+
+                // ถ้าเป็นชื่อเรา ให้ทับด้วยสไตล์พิเศษ (กรอบสีแดง + เงา + ตัวหนา)
+                let rowStyle = isMe ? 
+                    `style='${bgColor} border: 2px solid #ff4757; box-shadow: 0 0 10px rgba(255, 71, 87, 0.5); font-weight: 900; color: #d63031;'` : 
+                    `style='${bgColor}'`;
+
+                html += `<tr ${rowStyle}>
                             <td style='padding:8px;'>${index+1}. ${row[0]}</td>
                             <td style='text-align:right; padding:8px;'>${row[2]} วิ</td>
                          </tr>`;
