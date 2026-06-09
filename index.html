@@ -39,35 +39,42 @@
     let user = { name: "Guest", pic: "" };
 
     // 1. ฟังก์ชันโหลด Leaderboard
-    // 1. ฟังก์ชันโหลด Leaderboard (แก้ไขให้ถูกต้อง)
+    // 1. ฟังก์ชันโหลด Leaderboard (ขอบมน, มีเหรียญ, สีสวย)
     function loadLeaderboard() {
         fetch("https://script.google.com/macros/s/AKfycbx0MU4lHie2XfiAWbaFWPTqncntH-LLZzdok6yGdAtlZjfq7pvwmPJXYJ2lGpB8kXaa/exec")
         .then(res => res.json())
         .then(data => {
             data.sort((a, b) => a[2] - b[2]); 
             
-            let html = "<table style='width:100%; text-align:left; border-collapse: collapse;'>";
+            // เพิ่ม border-spacing: 0 5px เพื่อให้แต่ละแถวมีระยะห่างและโค้งมนแยกกันชัดเจน
+            let html = "<table style='width:100%; text-align:left; border-collapse: separate; border-spacing: 0 5px;'>";
             
-            const pastelColors = [
-                '#ffcdd2', '#f8bbd0', '#e1bee7', '#d1c4e9', '#c5cae9', 
-                '#b3e5fc', '#b2ebf2', '#c8e6c9', '#dcedc8', '#fff9c4'
-            ];
-
             data.forEach((row, index) => {
                 let bgColor = "";
+                let medal = "";
                 let isMe = (row[0].trim() === user.name.trim());
 
-                if (index < 10) {
-                    bgColor = `background: ${pastelColors[index % 10]};`;
+                if (index === 0) {
+                    bgColor = "background: #FFD700;"; // ทอง
+                    medal = "🥇 ";
+                } else if (index === 1) {
+                    bgColor = "background: #C0C0C0;"; // เงิน
+                    medal = "🥈 ";
+                } else if (index === 2) {
+                    bgColor = "background: #CD7F32;"; // ทองแดง
+                    medal = "🥉 ";
+                } else if (index < 10) {
+                    bgColor = "background: #E1F5FE;"; // ฟ้าอ่อนพาสเทล
                 }
 
+                // ปรับ border-radius ให้โค้งมน
                 let rowStyle = isMe ? 
-                    `style='${bgColor} border: 3px solid #ff4757; box-shadow: 0 0 10px rgba(255, 71, 87, 0.5); font-weight: 900; color: #d63031;'` : 
-                    `style='${bgColor}'`;
+                    `style='${bgColor} border: 3px solid #ff4757; box-shadow: 0 0 10px rgba(255, 71, 87, 0.5); font-weight: 900; color: #d63031; border-radius: 15px;'` : 
+                    `style='${bgColor} border-radius: 15px;'`;
 
                 html += `<tr ${rowStyle}>
-                            <td style='padding:8px;'>${index+1}. ${row[0]}</td>
-                            <td style='text-align:right; padding:8px;'>${row[2]} วิ</td>
+                            <td style='padding:10px 15px; border-top-left-radius: 15px; border-bottom-left-radius: 15px;'>${medal}${index+1}. ${row[0]}</td>
+                            <td style='text-align:right; padding:10px 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px;'>${row[2]} วิ</td>
                          </tr>`;
             });
             
