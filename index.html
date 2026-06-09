@@ -53,29 +53,26 @@
                 let bgColor = "";
                 let medal = "";
                 let isMe = (row[0].trim() === user.name.trim());
+                
+                // สมมติว่า row[1] คือลิงก์รูปโปรไฟล์ (ถ้าไม่ใช่ ให้แก้เลข 1 เป็นเลขคอลัมน์รูปนะครับ)
+                let profilePic = row[1] ? `<img src="${row[1]}" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; margin-right:8px;">` : "";
 
-                if (index === 0) {
-                    bgColor = "background: #FFD700;"; // ทอง
-                    medal = "🥇 ";
-                } else if (index === 1) {
-                    bgColor = "background: #C0C0C0;"; // เงิน
-                    medal = "🥈 ";
-                } else if (index === 2) {
-                    bgColor = "background: #CD7F32;"; // ทองแดง
-                    medal = "🥉 ";
-                } else if (index < 10) {
-                    bgColor = "background: #E1F5FE;"; // ฟ้าอ่อนพาสเทล
-                }
+                if (index === 0) { bgColor = "background: #FFD700;"; medal = "🥇 "; }
+                else if (index === 1) { bgColor = "background: #C0C0C0;"; medal = "🥈 "; }
+                else if (index === 2) { bgColor = "background: #CD7F32;"; medal = "🥉 "; }
+                else if (index < 10) { bgColor = "background: #E1F5FE;"; }
 
-                // ปรับ border-radius ให้โค้งมน
                 let rowStyle = isMe ? 
                     `style='${bgColor} border: 3px solid #ff4757; box-shadow: 0 0 10px rgba(255, 71, 87, 0.5); font-weight: 900; color: #d63031; border-radius: 15px;'` : 
                     `style='${bgColor} border-radius: 15px;'`;
 
                 html += `<tr ${rowStyle}>
-                            <td style='padding:10px 15px; border-top-left-radius: 15px; border-bottom-left-radius: 15px;'>${medal}${index+1}. ${row[0]}</td>
-                            <td style='text-align:right; padding:10px 15px; border-top-right-radius: 15px; border-bottom-right-radius: 15px;'>${row[2]} วิ</td>
+                            <td style='padding:10px 15px; border-radius: 15px;'>
+                                ${medal}${profilePic}${index+1}. ${row[0]}
+                            </td>
+                            <td style='text-align:right; padding:10px 15px;'>${row[2]} วิ</td>
                          </tr>`;
+            });
             });
             
             html += "</table>";
