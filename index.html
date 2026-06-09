@@ -39,14 +39,13 @@
     let user = { name: "Guest", pic: "" };
 
     // 1. ฟังก์ชันโหลด Leaderboard
-    // 1. ฟังก์ชันโหลด Leaderboard (ขอบมน, มีเหรียญ, สีสวย)
+    // 1. ฟังก์ชันโหลด Leaderboard (แก้ไขให้ถูกต้องและรันได้ปกติ)
     function loadLeaderboard() {
         fetch("https://script.google.com/macros/s/AKfycbx0MU4lHie2XfiAWbaFWPTqncntH-LLZzdok6yGdAtlZjfq7pvwmPJXYJ2lGpB8kXaa/exec")
         .then(res => res.json())
         .then(data => {
             data.sort((a, b) => a[2] - b[2]); 
             
-            // เพิ่ม border-spacing: 0 5px เพื่อให้แต่ละแถวมีระยะห่างและโค้งมนแยกกันชัดเจน
             let html = "<table style='width:100%; text-align:left; border-collapse: separate; border-spacing: 0 5px;'>";
             
             data.forEach((row, index) => {
@@ -54,7 +53,7 @@
                 let medal = "";
                 let isMe = (row[0].trim() === user.name.trim());
                 
-                // สมมติว่า row[1] คือลิงก์รูปโปรไฟล์ (ถ้าไม่ใช่ ให้แก้เลข 1 เป็นเลขคอลัมน์รูปนะครับ)
+                // ตรวจสอบคอลัมน์รูปภาพ (ปรับเลข row[1] ถ้าตำแหน่งรูปภาพใน Sheets ไม่ใช่คอลัมน์ที่ 2)
                 let profilePic = row[1] ? `<img src="${row[1]}" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; margin-right:8px;">` : "";
 
                 if (index === 0) { bgColor = "background: #FFD700;"; medal = "🥇 "; }
@@ -72,7 +71,6 @@
                             </td>
                             <td style='text-align:right; padding:10px 15px;'>${row[2]} วิ</td>
                          </tr>`;
-            });
             });
             
             html += "</table>";
