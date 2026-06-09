@@ -14,52 +14,55 @@
         .card { aspect-ratio: 1/1; background: #ff9a9e; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 3rem; cursor: pointer; border: 4px solid white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .card.open { background: white; }
         #timer { font-size: 4rem; font-weight: bold; color: #d63031; margin-bottom: 20px; }
-        .board { width: 100%; max-width: 400px; background: white; padding: 20px; border-radius: 20px; text-align: center; }
+        .board { width: 90%; max-width: 400px; background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        #profile { margin-bottom: 20px; text-align: center; }
+        #profile img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #ff6b6b; }
     </style>
 </head>
 <body>
-
-<audio id="bgMusic" loop preload="auto">
-    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-</audio>
-
+<audio id="bgMusic" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
 <div class="app" id="app">
     <div class="page" id="page1">
+        <div id="profile">กำลังโหลดข้อมูล LINE...</div>
         <h1>🏆 TOP 10</h1>
-        <div class="board" id="leaderboard">กำลังโหลดลำดับ...</div>
-        <button onclick="document.getElementById('app').style.transform='translateX(-100vw)'; startGame();" style="padding:15px 40px; margin-top:20px; font-size:1.5rem; border-radius:30px; border:none; background:#06c755; color:white;">เริ่มเล่น</button>
+        <div class="board" id="leaderboard">ตารางจัดอันดับ...</div>
+        <div id="myRankStatus" style="margin-top:20px; font-size:1.3rem; font-weight:bold; color:#ff4757;"></div>
+        <button onclick="document.getElementById('app').style.transform='translateX(-100vw)'; startGame();" style="padding:15px 40px; margin-top:20px; font-size:1.5rem; border-radius:30px; border:none; background:#06c755; color:white;">เริ่มเกม</button>
     </div>
     <div class="page" id="page2">
         <div id="timer">00:00</div>
         <div class="grid" id="grid"></div>
     </div>
 </div>
-
 <script>
+    const MY_LIFF_ID = "ใส่_LIFF_ID_ของคุณที่นี่";
+    let user = { name: "Guest", pic: "" };
+    
+    liff.init({ liffId: MY_LIFF_ID }).then(() => {
+        if (!liff.isLoggedIn()) { liff.login(); }
+        else { liff.getProfile().then(p => { 
+            user = { name: p.displayName, pic: p.pictureUrl };
+            document.getElementById('profile').innerHTML = `<img src="${p.pictureUrl}"><br>สวัสดีคุณ ${p.displayName}`;
+        }); }
+    });
+
     const foodIcons = ['🍎', '🍕', '🍔', '🍟', '🍦', '🍩', '🍣', '🍱', '🍤', '🍜'];
     let cards = [], flipped = [], matched = 0, timer = 0, interval;
 
     function startGame() {
-        // รีเซ็ตค่าทุกอย่าง
         clearInterval(interval);
         interval = null;
-        timer = 0;
-        matched = 0;
-        flipped = [];
+        timer = 0; matched = 0; flipped = [];
         document.getElementById('timer').innerText = "00:00";
         document.getElementById('bgMusic').currentTime = 0;
         document.getElementById('bgMusic').play();
         
         cards = [...foodIcons, ...foodIcons].sort(() => Math.random() - 0.5);
-        const grid = document.getElementById('grid'); 
-        grid.innerHTML = '';
-
+        const grid = document.getElementById('grid'); grid.innerHTML = '';
         cards.forEach(icon => {
             const div = document.createElement('div'); div.className = 'card';
             div.onclick = () => {
-                if(!interval) {
-                    interval = setInterval(() => { timer++; document.getElementById('timer').innerText = timer; }, 1000);
-                }
+                if(!interval) { interval = setInterval(() => { timer++; document.getElementById('timer').innerText = timer; }, 1000); }
                 if(flipped.length < 2 && !div.classList.contains('open')) {
                     div.innerHTML = icon; div.classList.add('open'); flipped.push({div, icon});
                     if(flipped.length === 2) checkMatch();
@@ -68,18 +71,20 @@
             grid.appendChild(div);
         });
     }
-
     function checkMatch() {
         if(flipped[0].icon === flipped[1].icon) {
             matched++; flipped = [];
             if(matched === 10) {
-                clearInterval(interval); 
+                clearInterval(interval);
                 document.getElementById('bgMusic').pause();
                 confetti({ particleCount: 500, spread: 200, origin: { y: 0.6 } });
-                setTimeout(() => { alert("🎉 จบเกม! คุณทำเวลาได้ " + timer + " วินาที"); document.getElementById('app').style.transform='translateX(0)'; }, 500);
+                setTimeout(() => { 
+                    alert("🎉 ยินดีด้วยคุณ " + user.name + "! เวลาที่ทำได้: " + timer + " วินาที");
+                    document.getElementById('app').style.transform='translateX(0)';
+                }, 500);
             }
-        } else { 
-            setTimeout(() => { flipped.forEach(f => { f.div.innerHTML = ''; f.div.classList.remove('open'); }); flipped = []; }, 500); 
+        } else {
+            setTimeout(() => { flipped.forEach(f => { f.div.innerHTML = ''; f.div.classList.remove('open'); }); flipped = []; }, 500);
         }
     }
 </script>
