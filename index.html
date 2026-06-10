@@ -44,18 +44,20 @@
         fetch("https://script.google.com/macros/s/AKfycbx0MU4lHie2XfiAWbaFWPTqncntH-LLZzdok6yGdAtlZjfq7pvwmPJXYJ2lGpB8kXaa/exec")
         .then(res => res.json())
         .then(data => {
+            // --- ตรงนี้คือจุดสำคัญที่เพิ่มเข้ามาครับ ---
+            // กรองเอาเฉพาะข้อมูลที่มีชื่อ (row[0]) และมีค่าเวลา (row[2]) มากกว่า 0 เท่านั้น
+            data = data.filter(row => row[0] && row[2] > 0);
+            // ------------------------------------------
+
             data.sort((a, b) => a[2] - b[2]); 
             
             let html = "<table style='width:100%; text-align:left; border-collapse: separate; border-spacing: 0 5px;'>";
             
             data.forEach((row, index) => {
-                if (!row[2]) return;
-                
                 let bgColor = "";
                 let medal = "";
                 let isMe = (row[0].trim() === user.name.trim());
                 
-                // ตรวจสอบคอลัมน์รูปภาพ (ปรับเลข row[1] ถ้าตำแหน่งรูปภาพใน Sheets ไม่ใช่คอลัมน์ที่ 2)
                 let profilePic = row[1] ? `<img src="${row[1]}" style="width:30px; height:30px; border-radius:50%; vertical-align:middle; margin-right:8px;">` : "";
 
                 if (index === 0) { bgColor = "background: #FFD700;"; medal = "🥇 "; }
