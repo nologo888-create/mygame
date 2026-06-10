@@ -49,6 +49,8 @@
             let html = "<table style='width:100%; text-align:left; border-collapse: separate; border-spacing: 0 5px;'>";
             
             data.forEach((row, index) => {
+                if (!row[2]) return;
+                
                 let bgColor = "";
                 let medal = "";
                 let isMe = (row[0].trim() === user.name.trim());
